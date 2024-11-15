@@ -127,7 +127,7 @@ to multiple R packages:
 
   - [`chronosphere`](https://chronosphere.info/r_client/):
     version-controlled data distribution.
-  - [`rgplates`](https://adamkocsis.github.io/rgplates/): functions
+  - [`rgplates`](https://gplates.github.io/rgplates/): functions
     related to tectonic reconstructions.
   - [`via`](https://adamkocsis.github.io/via/): Virtual Arrays for
     efficient organisation of high-dimensional data.

@@ -14,12 +14,68 @@ vignette: >
 
 
 ## Accessing registry tables
+
 * * *
 
-To make 
+The chronosphere provides access to thousands of data items. The available data can be queried with the client package, or can be inspected on the project's (in-development) [website](https://chronosphere.info/data/). To access the available data in R, we need client package. 
 
-Available database - variable combinations can be inspected with the `datasets()` funciton:
-```{r something}
+
+```{r attachpackage}
 library("chronosphere")
 ```
+
+## Overview
+
+The available data can be inspected with the `datasets()` function. This function is connecting to the remote where the registry files are and downloads an overview of the registered data items. 
+
+```{r first}
+ds <- datasets()
+```
+
+This function returns a a `data.frame` class object, which includes an overview of the available data( default argumentation). The function will also check for important changes to the remotes, which might indicate that some action (e.g. update of the client) is required. Every row represents a unique series (`src`-`ser` combinations), and some information about their defaults (version, resolution, class, etc):
+
+```{r showres}
+str(ds)
+```
+
+Typically the 1) most recent version of the series with the 2) coarsest resolution and the 3) fastest expected loading time will be the default, which means that some data can be already be downloaded with a simple `src` - `ser` combination. Please check out the basic [overview of the chronosphere's data model](https://chronosphere.info/model/datasets/) to read more about what `src`, `ser` etc mean.
+
+<div class="alert alert-primary" role="info"> 
+Note that this was tutorial was build on 2024-11-15, therefore the exact result that you see might be different!
+</div>
+
+## Source-specific registry files 
+
+Note that the object that we just created does not contain all available items that come from a series. There can can be hundreds of these. This information is tabulated for every source (`src`), and needs to be accessed separately. This ensures that the growning of the chronosphere's data library will not cause performance issues when it comes to finding data. To get these source-specific registry files, all we have to do is provide the source (`src`) argument. For instance, if we want to access the data items that are related to the [PALEOMAP project](www.scotese.com) (or, on the [chronosphere](https://chronosphere.info/data/paleomap/)), we have to provide the `src="paleomap"` argument:
+
+```{r paleomap}
+pm <- datasets(src="paleomap")
+```
+
+This results in a different `data.frame`, which includes all items of the `paleomap` source. You can either look into the table with `View()` (or equivalent) funciton, or you can list out the available `src`- `ser` - `ver` - `res` combinations with this chunk of code:
+
+```{r different}
+unique(pm[, c("src", "ser", "ver", "resolution")])
+```
+
+Note that this large `data.frame` object will also include additional metadata, such as the long names of the series, the associated references, the `class`, as well as the URL of the `datafile` that is associated with the the item and the `code` that will be used to instantiate the object. 
+
+## Saving the registry files
+
+By default the registry files here are saved to a temporary directory, which will be destroyed when your R session quits. This means that you will have to re-download the registry files whenever you execute the `datasets()` function. This can be avoided, with the `datadir` argument, which has to point to an existing directory (where you have writing access). The registry files will be saved to this place. 
+
+
+```{r datadir}
+# create chronosphere directory in the user's home
+dir <- "~/chronosphere"
+dir.create(dir, showWarnings=FALSE)
+pm <- datasets(src="paleomap", datadir=dir)
+```
+
+<div class="alert alert-primary" role="info"> 
+The `datadir` argument will added as a package-wide variable in the next update, so you would not have to define it separately for either `datasets()` or `fetch()` function calls. 
+</div>
+
+
+Now that we know how to inspect the available data, it is time to see how we can actually access these.
 
